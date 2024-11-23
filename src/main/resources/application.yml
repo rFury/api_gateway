@@ -1,0 +1,29 @@
+
+spring:
+  application:
+    name: api-gateway
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: cars     
+          uri: lb://cars 
+          predicates:
+            - Path=/Cars/api/**
+          filters:
+            - AddRequestHeader=X-Custom-Header, Value
+            - RemoveResponseHeader=Server        
+        - id: users                    
+          uri: lb://user-micorservices  
+          predicates:
+            - Path=/Api/**
+          filters:
+            - AddRequestHeader=X-Custom-Header, Value
+            - RemoveResponseHeader=Server
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST         
+eureka:
+    client:
+      service-url:
+        defaultZone: http://localhost:8761/eureka  
